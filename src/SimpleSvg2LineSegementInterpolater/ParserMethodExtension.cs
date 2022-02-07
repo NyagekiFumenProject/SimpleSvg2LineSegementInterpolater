@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSvg2LineSegementInterpolater
 {
-    public static class ParserMethodExtension
+    internal static class ParserMethodExtension
     {
         public static int TryToInt(this string str, int defaultVal = default)
             => int.TryParse(str, out var d) ? d : defaultVal;

@@ -1,8 +1,11 @@
-﻿using AngleSharp.Dom;
+﻿using AngleSharp;
+using AngleSharp.Dom;
+using AngleSharp.Io;
 using SimpleSvg2LineSegementInterpolater.Base;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +14,27 @@ namespace SimpleSvg2LineSegementInterpolater
 {
     public static class Interpolater
     {
+        private static Task<IDocument> GenerateDocument(string content, string contentType)
+        {
+            var config = Configuration.Default.WithDefaultLoader().WithXml();
+            var context = BrowsingContext.New(config);
+            return context.OpenAsync(res =>
+            {
+                res.Content(content);
+
+                if (!string.IsNullOrEmpty(contentType))
+                    res.Header(HeaderNames.ContentType, contentType);
+            });
+        }
+
+        public static async Task<List<LineSegementCollection>> GenerateInterpolatedLineSegmentAsync(string svgFileContent)
+        {
+            var document = await GenerateDocument(svgFileContent, "image/svg+xml");
+            var svg = document.QuerySelector("svg");
+
+            return svg.Children.SelectMany(x => GenerateInterpolatedLineSegment(x)).ToList();
+        }
+
         public static List<LineSegementCollection> GenerateInterpolatedLineSegment(IElement element)
         {
             var collections = new List<LineSegementCollection>();
