@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31829.152
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSvg2LineSegementInterpolater", "src\SimpleSvg2LineSegementInterpolater.csproj", "{71ECBEFB-4361-4B75-B57C-79E65C924251}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71ECBEFB-4361-4B75-B57C-79E65C924251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71ECBEFB-4361-4B75-B57C-79E65C924251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71ECBEFB-4361-4B75-B57C-79E65C924251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71ECBEFB-4361-4B75-B57C-79E65C924251}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEE662C0-34C1-410A-8F69-1A8F5C8E6F65}
+	EndGlobalSection
+EndGlobal
