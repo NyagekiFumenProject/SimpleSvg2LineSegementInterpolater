@@ -30,64 +30,65 @@ namespace SimpleSvg2LineSegementInterpolater
             });
         }
 
-        public static async Task<List<LineSegementCollection>> GenerateInterpolatedLineSegmentAsync(string svgFileContent)
+        public static async Task<List<LineSegementCollection>> GenerateInterpolatedLineSegmentAsync(string svgFileContent, InterpolaterOption option)
         {
             var document = await GenerateDocument(svgFileContent, "image/svg+xml");
             var svg = document.QuerySelector("svg");
 
-            return GenerateInterpolatedLineSegment(svg).ToList();
+            return GenerateInterpolatedLineSegment(svg, option).ToList();
         }
 
-        public static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegment(IElement element)
+        public static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegment(IElement element, InterpolaterOption option)
         {
             var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.EnableFillAsStroke ? fill : option.DefaultStrokeColor);
 
             LineSegementCollection PostProcess(LineSegementCollection collection)
             {
                 //todo overwrite props
-                if (fill != default)
-                    collection.Color = fill;
+                if (stroke != default)
+                    collection.Color = stroke;
                 return collection;
             }
 
             switch (element.NodeName)
             {
                 case "rect":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByRect(element));
+                    yield return PostProcess(GenerateInterpolatedLineSegmentByRect(element, option));
                     break;
                 case "line":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByLine(element));
+                    yield return PostProcess(GenerateInterpolatedLineSegmentByLine(element, option));
                     break;
                 case "polygon":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByPolygon(element));
+                    yield return PostProcess(GenerateInterpolatedLineSegmentByPolygon(element, option));
                     break;
                 case "polyline":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByPolygon(element, false));
+                    yield return PostProcess(GenerateInterpolatedLineSegmentByPolygon(element, option, false));
                     break;
                 case "circle":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByCircle(element));
+                    yield return PostProcess(GenerateInterpolatedLineSegmentByCircle(element, option));
                     break;
                 case "ellipse":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByEllipse(element));
+                    yield return PostProcess(GenerateInterpolatedLineSegmentByEllipse(element, option));
                     break;
                 case "path":
-                    foreach (var childSegment in GenerateInterpolatedLineSegmentByPath(element))
+                    foreach (var childSegment in GenerateInterpolatedLineSegmentByPath(element, option))
                         yield return PostProcess(childSegment);
                     break;
                 case "text":
-                    foreach (var childSegment in GenerateInterpolatedLineSegmentByText(element))
+                    foreach (var childSegment in GenerateInterpolatedLineSegmentByText(element, option))
                         yield return PostProcess(childSegment);
                     break;
                 case "g":
                 default:
                     foreach (var child in element.Children)
-                        foreach (var childSegment in GenerateInterpolatedLineSegment(child))
+                        foreach (var childSegment in GenerateInterpolatedLineSegment(child, option))
                             yield return PostProcess(childSegment);
                     break;
             }
         }
 
-        private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentByText(IElement element)
+        private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentByText(IElement element, InterpolaterOption option)
         {
             GlyphRun ConvertTextLinesToGlyphRun(GlyphTypeface glyphTypeface, double renderingEmSize, double advanceWidth, double advanceHeight, System.Windows.Point baselineOrigin, string[] lines)
             {
@@ -136,7 +137,7 @@ namespace SimpleSvg2LineSegementInterpolater
             if (string.IsNullOrWhiteSpace(text))
                 text = element.TextContent;
             var x = element.Attributes.TryGetAttrValue("x", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
             var y = element.Attributes.TryGetAttrValue("y", 0f);
 
             var glyphTypeface = new GlyphTypeface(new Uri(@"C:\WINDOWS\Fonts\msyh.ttc"));
@@ -180,11 +181,10 @@ namespace SimpleSvg2LineSegementInterpolater
             }
         }
 
-        private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentByPath(IElement element)
+        private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentByPath(IElement element, InterpolaterOption option)
         {
             var d = element.Attributes.TryGetAttrValue("d", "");
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
-            var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
 
             foreach (var item in d.Split(new char[] { 'z', 'Z' }))
             {
@@ -211,13 +211,12 @@ namespace SimpleSvg2LineSegementInterpolater
 
         }
 
-        private static LineSegementCollection GenerateInterpolatedLineSegmentByCircle(IElement element)
+        private static LineSegementCollection GenerateInterpolatedLineSegmentByCircle(IElement element, InterpolaterOption option)
         {
             var cx = element.Attributes.TryGetAttrValue("cx", 0f);
             var cy = element.Attributes.TryGetAttrValue("cy", 0f);
             var r = element.Attributes.TryGetAttrValue("r", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
-            var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
 
             var collection = new LineSegementCollection();
 
@@ -239,14 +238,13 @@ namespace SimpleSvg2LineSegementInterpolater
             return collection;
         }
 
-        private static LineSegementCollection GenerateInterpolatedLineSegmentByEllipse(IElement element)
+        private static LineSegementCollection GenerateInterpolatedLineSegmentByEllipse(IElement element, InterpolaterOption option)
         {
             var cx = element.Attributes.TryGetAttrValue("cx", 0f);
             var cy = element.Attributes.TryGetAttrValue("cy", 0f);
             var rx = element.Attributes.TryGetAttrValue("rx", 0f);
             var ry = element.Attributes.TryGetAttrValue("ry", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
-            var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
 
             var collection = new LineSegementCollection();
 
@@ -324,14 +322,13 @@ namespace SimpleSvg2LineSegementInterpolater
             return collection;
         }
 
-        private static LineSegementCollection GenerateInterpolatedLineSegmentByRect(IElement element)
+        private static LineSegementCollection GenerateInterpolatedLineSegmentByRect(IElement element, InterpolaterOption option)
         {
             var baseX = element.Attributes.TryGetAttrValue("x", 0f);
             var baseY = element.Attributes.TryGetAttrValue("y", 0f);
             var width = element.Attributes.TryGetAttrValue("width", 0f);
             var height = element.Attributes.TryGetAttrValue("height", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
-            var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
 
             var collection = new LineSegementCollection();
 
@@ -349,14 +346,14 @@ namespace SimpleSvg2LineSegementInterpolater
             return collection;
         }
 
-        private static LineSegementCollection GenerateInterpolatedLineSegmentByPolygon(IElement element, bool isClose = true)
+        private static LineSegementCollection GenerateInterpolatedLineSegmentByPolygon(IElement element, InterpolaterOption option, bool isClose = true)
         {
             var points = element.Attributes.TryGetAttrValue("points", string.Empty).Split(" ").Select(x =>
             {
                 var arr = x.Split(",");
                 return new PointF(arr[0].TryToFloat(), arr[1].TryToFloat());
             }).ToArray();
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
 
             var collection = new LineSegementCollection();
 
@@ -372,13 +369,13 @@ namespace SimpleSvg2LineSegementInterpolater
             return collection;
         }
 
-        private static LineSegementCollection GenerateInterpolatedLineSegmentByLine(IElement element)
+        private static LineSegementCollection GenerateInterpolatedLineSegmentByLine(IElement element, InterpolaterOption option)
         {
             var fromX = element.Attributes.TryGetAttrValue("x1", 0f);
             var fromY = element.Attributes.TryGetAttrValue("y1", 0f);
             var toX = element.Attributes.TryGetAttrValue("x2", 0f);
             var toY = element.Attributes.TryGetAttrValue("y2", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
+            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
 
             var collection = new LineSegementCollection();
 
