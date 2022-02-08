@@ -71,7 +71,8 @@ namespace SimpleSvg2LineSegementInterpolater
                     yield return PostProcess(GenerateInterpolatedLineSegmentByEllipse(element));
                     break;
                 case "path":
-                    yield return PostProcess(GenerateInterpolatedLineSegmentByPath(element));
+                    foreach (var childSegment in GenerateInterpolatedLineSegmentByPath(element))
+                        yield return PostProcess(childSegment);
                     break;
                 case "text":
                     foreach (var childSegment in GenerateInterpolatedLineSegmentByText(element))
@@ -108,7 +109,6 @@ namespace SimpleSvg2LineSegementInterpolater
                         glyphOffsets.Add(new(x, y));
 
                         x += advanceWidth;
-
                     }
 
                     y += advanceHeight;
@@ -158,7 +158,7 @@ namespace SimpleSvg2LineSegementInterpolater
 
             foreach (var outputGeometry in list)
             {
-                outputGeometry.Transform = new TranslateTransform(x,y);
+                outputGeometry.Transform = new TranslateTransform(x, y);
                 var path = outputGeometry.GetOutlinedPathGeometry().ToString().Trim();
                 if (path.Length > 2 && path.StartsWith("F1"))
                     path = path.Substring(2);
@@ -180,30 +180,36 @@ namespace SimpleSvg2LineSegementInterpolater
             }
         }
 
-        private static LineSegementCollection GenerateInterpolatedLineSegmentByPath(IElement element)
+        private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentByPath(IElement element)
         {
             var d = element.Attributes.TryGetAttrValue("d", "");
             var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
             var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
 
-            var collection = new LineSegementCollection();
+            foreach (var item in d.Split(new char[] { 'z', 'Z' }))
+            {
+                var z = item.Trim();
+                if (!item.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
+                    z = z + "z";
 
-            collection.Points = new List<PointF>();
-            collection.Color = stroke;
+                var collection = new LineSegementCollection();
 
-            var svgPathData = new SvgPathData();
-            svgPathData.Path(d);
+                collection.Points = new List<PointF>();
+                collection.Color = stroke;
 
-            var reserializer = new BezierToVertex();
-            reserializer.GetContours(svgPathData);
+                var svgPathData = new SvgPathData();
+                svgPathData.Path(z);
 
-            foreach (var vec2 in reserializer.WorkVertices)
-                collection.Points.Add(new(vec2.X, vec2.Y));
+                var reserializer = new BezierToVertex();
+                reserializer.GetContours(svgPathData);
 
-            return collection;
+                foreach (var vec2 in reserializer.WorkVertices)
+                    collection.Points.Add(new(vec2.X, vec2.Y));
+
+                yield return collection;
+            }
+
         }
-
-
 
         private static LineSegementCollection GenerateInterpolatedLineSegmentByCircle(IElement element)
         {

@@ -36,6 +36,8 @@ namespace SimpleSvg2LineSegementInterpolater
 
         private static void Draw(Graphics graphics, LineSegementCollection lineSegement)
         {
+            if (lineSegement.Points.Count == 0)
+                return;
             using var pen = new Pen(lineSegement.Color);
             graphics.DrawLines(pen, lineSegement.Points.ToArray());
         }
