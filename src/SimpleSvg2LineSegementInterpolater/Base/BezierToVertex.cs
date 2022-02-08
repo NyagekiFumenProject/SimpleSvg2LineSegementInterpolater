@@ -9,7 +9,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleSvg2LineSegementInterpolater
+namespace SimpleSvg2LineSegementInterpolater.Base
 {
     internal class BezierToVertex
     {

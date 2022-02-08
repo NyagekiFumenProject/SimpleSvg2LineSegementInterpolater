@@ -188,7 +188,7 @@ namespace SimpleSvg2LineSegementInterpolater
 
             foreach (var item in d.Split(new char[] { 'z', 'Z' }))
             {
-                var z = item.Trim();
+                var z = item.Trim().Replace("\r", string.Empty).Replace("\n", string.Empty);
                 if (!item.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
                     z = z + "z";
 

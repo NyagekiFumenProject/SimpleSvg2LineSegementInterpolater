@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace SimpleSvg2LineSegementInterpolater
+namespace SimpleSvg2LineSegementInterpolater.Base
 {
     public struct Curve
     {
