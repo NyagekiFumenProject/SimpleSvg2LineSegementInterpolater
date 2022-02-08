@@ -15,7 +15,8 @@ namespace Example
         {
             var lineSegments = await Interpolater.GenerateInterpolatedLineSegmentAsync(await File.ReadAllTextAsync(@"I:\zz.svg"), new InterpolaterOption()
             {
-                DefaultStrokeColor = System.Drawing.Color.Pink
+                DefaultStrokeColor = System.Drawing.Color.Pink,
+                Scale = 4f
             });
             Debug.WriteLine($"before optimze points count: {lineSegments.Sum(x => x.Points.Count)}");
             foreach (var lineSegment in lineSegments)

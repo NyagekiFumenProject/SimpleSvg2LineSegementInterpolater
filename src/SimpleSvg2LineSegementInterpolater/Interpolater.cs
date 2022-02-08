@@ -40,6 +40,21 @@ namespace SimpleSvg2LineSegementInterpolater
 
         public static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegment(IElement element, InterpolaterOption option)
         {
+            LineSegementCollection PostProcess(LineSegementCollection collection)
+            {
+                for (int i = 0; i < collection.Points.Count; i++)
+                {
+                    var p = collection.Points[i];
+                    collection.Points[i] = new(p.X * option.Scale, p.Y * option.Scale);
+                }
+                return collection;
+            }
+
+            return GenerateInterpolatedLineSegmentInternal(element, option).Select(x => PostProcess(x));
+        }
+
+        private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentInternal(IElement element, InterpolaterOption option)
+        {
             var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
             var stroke = element.Attributes.TryGetAttrValue("stroke", option.EnableFillAsStroke ? fill : option.DefaultStrokeColor);
 
@@ -82,7 +97,7 @@ namespace SimpleSvg2LineSegementInterpolater
                 case "g":
                 default:
                     foreach (var child in element.Children)
-                        foreach (var childSegment in GenerateInterpolatedLineSegment(child, option))
+                        foreach (var childSegment in GenerateInterpolatedLineSegmentInternal(child, option))
                             yield return PostProcess(childSegment);
                     break;
             }

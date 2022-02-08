@@ -11,5 +11,6 @@ namespace SimpleSvg2LineSegementInterpolater
     {
         public Color DefaultStrokeColor { get; set; } = Color.Green;
         public bool EnableFillAsStroke { get; set; } = true;
+        public float Scale { get; set; } = 1;
     }
 }
