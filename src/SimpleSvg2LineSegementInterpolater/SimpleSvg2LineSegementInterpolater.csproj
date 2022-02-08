@@ -4,6 +4,15 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Authors>MikiraSora</Authors>
+    <Company />
+    <Product />
+    <Description>Generate line segments though interpolating svg shapes.</Description>
+    <RepositoryUrl>https://github.com/MikiraSora/SimpleSvg2LineSegementInterpolater</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/MikiraSora/SimpleSvg2LineSegementInterpolater</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>0.4.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
