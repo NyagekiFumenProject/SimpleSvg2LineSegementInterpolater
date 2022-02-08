@@ -27,6 +27,8 @@ namespace SimpleSvg2LineSegementInterpolater
 
         public static Color TryToColor(this string str, Color defaultVal = default)
         {
+            if (str == "none")
+                return defaultVal;
             return ColorTranslator.FromHtml(str);
         }
 
@@ -47,5 +49,8 @@ namespace SimpleSvg2LineSegementInterpolater
 
         public static Color TryGetAttrValue(this INamedNodeMap map, string attrName, Color defaultVal = default)
             => map[attrName]?.Value?.TryToColor(defaultVal) ?? defaultVal;
+
+        public static string TryGetAttrValue(this INamedNodeMap map, string attrName, string defaultVal = default)
+            => map[attrName]?.Value ?? defaultVal;
     }
 }
