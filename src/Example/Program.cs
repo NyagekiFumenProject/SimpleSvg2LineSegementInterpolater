@@ -13,9 +13,10 @@ namespace Example
     {
         static async Task Main(string[] args)
         {
-            var lineSegments = await Interpolater.GenerateInterpolatedLineSegmentAsync(await File.ReadAllTextAsync(@"I:\zz.svg"), new InterpolaterOption()
+            var lineSegments = await Interpolater.GenerateInterpolatedLineSegmentAsync(await File.ReadAllTextAsync(@"F:\Users\mikir\Downloads\photos-svgrepo-com.svg"), new InterpolaterOption()
             {
                 DefaultStrokeColor = System.Drawing.Color.Pink,
+                EnableFillAsStroke = true,
                 Scale = 4f
             });
             Debug.WriteLine($"before optimze points count: {lineSegments.Sum(x => x.Points.Count)}");

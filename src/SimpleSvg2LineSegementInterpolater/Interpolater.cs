@@ -55,8 +55,7 @@ namespace SimpleSvg2LineSegementInterpolater
 
         private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentInternal(IElement element, InterpolaterOption option)
         {
-            var fill = element.Attributes.TryGetAttrValue("fill", default(Color));
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.EnableFillAsStroke ? fill : option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option, false);
 
             LineSegementCollection PostProcess(LineSegementCollection collection)
             {
@@ -152,8 +151,8 @@ namespace SimpleSvg2LineSegementInterpolater
             if (string.IsNullOrWhiteSpace(text))
                 text = element.TextContent;
             var x = element.Attributes.TryGetAttrValue("x", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
             var y = element.Attributes.TryGetAttrValue("y", 0f);
+            var stroke = element.TryGetStoke(option);
 
             var glyphTypeface = new GlyphTypeface(new Uri(@"C:\WINDOWS\Fonts\msyh.ttc"));
             var run = ConvertTextLinesToGlyphRun(glyphTypeface, fontSize, fontSize, fontSize, default, new[] { text });
@@ -199,7 +198,7 @@ namespace SimpleSvg2LineSegementInterpolater
         private static IEnumerable<LineSegementCollection> GenerateInterpolatedLineSegmentByPath(IElement element, InterpolaterOption option)
         {
             var d = element.Attributes.TryGetAttrValue("d", "");
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option);
 
             foreach (var item in d.Split(new char[] { 'z', 'Z' }))
             {
@@ -231,7 +230,7 @@ namespace SimpleSvg2LineSegementInterpolater
             var cx = element.Attributes.TryGetAttrValue("cx", 0f);
             var cy = element.Attributes.TryGetAttrValue("cy", 0f);
             var r = element.Attributes.TryGetAttrValue("r", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option);
 
             var collection = new LineSegementCollection();
 
@@ -259,7 +258,7 @@ namespace SimpleSvg2LineSegementInterpolater
             var cy = element.Attributes.TryGetAttrValue("cy", 0f);
             var rx = element.Attributes.TryGetAttrValue("rx", 0f);
             var ry = element.Attributes.TryGetAttrValue("ry", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option);
 
             var collection = new LineSegementCollection();
 
@@ -343,7 +342,7 @@ namespace SimpleSvg2LineSegementInterpolater
             var baseY = element.Attributes.TryGetAttrValue("y", 0f);
             var width = element.Attributes.TryGetAttrValue("width", 0f);
             var height = element.Attributes.TryGetAttrValue("height", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option);
 
             var collection = new LineSegementCollection();
 
@@ -368,7 +367,7 @@ namespace SimpleSvg2LineSegementInterpolater
                 var arr = x.Split(",");
                 return new PointF(arr[0].TryToFloat(), arr[1].TryToFloat());
             }).ToArray();
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option);
 
             var collection = new LineSegementCollection();
 
@@ -390,7 +389,7 @@ namespace SimpleSvg2LineSegementInterpolater
             var fromY = element.Attributes.TryGetAttrValue("y1", 0f);
             var toX = element.Attributes.TryGetAttrValue("x2", 0f);
             var toY = element.Attributes.TryGetAttrValue("y2", 0f);
-            var stroke = element.Attributes.TryGetAttrValue("stroke", option.DefaultStrokeColor);
+            var stroke = element.TryGetStoke(option);
 
             var collection = new LineSegementCollection();
 

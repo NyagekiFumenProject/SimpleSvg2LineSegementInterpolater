@@ -1,5 +1,11 @@
-﻿using AngleSharp.Dom;
+﻿using AngleSharp;
+using AngleSharp.Common;
+using AngleSharp.Css;
+using AngleSharp.Css.Dom;
+using AngleSharp.Css.Parser;
+using AngleSharp.Dom;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -52,5 +58,50 @@ namespace SimpleSvg2LineSegementInterpolater
 
         public static string TryGetAttrValue(this INamedNodeMap map, string attrName, string defaultVal = default)
             => map[attrName]?.Value ?? defaultVal;
+
+        private static CssParser parser = new CssParser();
+
+        public static Color TryGetFill(this IElement element, InterpolaterOption option)
+        {
+            var fillFromAttr = element.Attributes.TryGetAttrValue("fill", default(Color));
+            if (fillFromAttr != default(Color))
+                return fillFromAttr;
+
+            var result = parser.ParseDeclaration(element.GetAttribute("style"));
+            var fillStyleColor = result.FirstOrDefault(x => x.Name == "fill")?.RawValue;
+
+            if (fillStyleColor is not null)
+            {
+                var rgba = fillStyleColor.AsRgba();
+                var color = Color.FromArgb((rgba << (3 * 8)) | (rgba >> 8));
+                return color;
+            }
+
+            return default;
+        }
+
+        public static Color TryGetStoke(this IElement element, InterpolaterOption option, bool enableDefaultValue = true)
+        {
+            var fill = element.TryGetFill(option);
+            var strokeBackValue = option.EnableFillAsStroke ? fill : default;
+            strokeBackValue = strokeBackValue == default ? (enableDefaultValue ? option.DefaultStrokeColor : default) : strokeBackValue;
+
+            var stroke = element.Attributes.TryGetAttrValue("stroke", default(Color));
+            if (stroke == default)
+            {
+                var result = parser.ParseDeclaration(element.GetAttribute("style"));
+                var strokeStyleColor = result.FirstOrDefault(x => x.Name == "stroke")?.RawValue; 
+                if (strokeStyleColor is not null)
+                {
+                    var rgba = strokeStyleColor.AsRgba();
+                    var color = Color.FromArgb((rgba << (3 * 8)) | (rgba >> 8));
+                    return color;
+                }
+
+                return strokeBackValue;
+            }
+
+            return stroke;
+        }
     }
 }
