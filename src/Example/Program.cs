@@ -13,11 +13,14 @@ namespace Example
     {
         static async Task Main(string[] args)
         {
-            var lineSegments = await Interpolater.GenerateInterpolatedLineSegmentAsync(await File.ReadAllTextAsync(@"F:\Users\mikir\Downloads\photos-svgrepo-com.svg"), new InterpolaterOption()
+            //var path = @"F:\Users\mikir\Downloads\photos-svgrepo-com.svg";
+            var path = @"I:\zz.svg";
+            var lineSegments = await Interpolater.GenerateInterpolatedLineSegmentAsync(await File.ReadAllTextAsync(path), new InterpolaterOption()
             {
                 DefaultStrokeColor = System.Drawing.Color.Pink,
                 EnableFillAsStroke = true,
-                Scale = 4f
+                Scale = 4f,
+                CircleSimplyAsLessPolygon = true
             });
             Debug.WriteLine($"before optimze points count: {lineSegments.Sum(x => x.Points.Count)}");
             foreach (var lineSegment in lineSegments)

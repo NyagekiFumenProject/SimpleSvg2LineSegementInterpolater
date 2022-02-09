@@ -237,9 +237,12 @@ namespace SimpleSvg2LineSegementInterpolater
             collection.Points = new List<PointF>();
             collection.Color = stroke;
 
-            for (int i = 0; i < 360; i++)
+            var edges = option.CircleSimplyAsLessPolygon ? 6 : 360;
+
+            for (int i = 0; i < edges; i++)
             {
-                var rad = i * MathF.PI / 180.0f;
+                var angle = i * 1.0f / edges;
+                var rad = angle * MathF.PI / 180.0f;
                 var x = cx + r * MathF.Cos(rad);
                 var y = cy + r * MathF.Sin(rad);
 

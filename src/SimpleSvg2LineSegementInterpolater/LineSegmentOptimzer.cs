@@ -10,12 +10,12 @@ namespace SimpleSvg2LineSegementInterpolater
 {
     public class LineSegmentOptimzer
     {
-        public static void Optimze(LineSegementCollection lineSegement)
+        public static void Optimze(LineSegementCollection lineSegement, float removeGradientThreold = 0.1f)
         {
             float calcGradient(PointF a, PointF b)
             {
-                if (a.Y == b.Y)
-                    return float.MaxValue;
+                if (a.X == b.X)
+                    return 0;
 
                 return (a.Y - b.Y) / (a.X - b.X);
             }
@@ -30,11 +30,10 @@ namespace SimpleSvg2LineSegementInterpolater
                 var me_g = calcGradient(mid, end);
 
                 //如果三点斜率相似，那就去掉中间的点
-                if (Math.Abs(sm_g - me_g) < 0.001)
+                if (Math.Abs(sm_g - me_g) < removeGradientThreold || (mid.Y == start.Y && mid.Y == end.Y))
                 {
                     lineSegement.Points.Remove(mid);
                     i--;
-                    continue;
                 }
             }
         }
