@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/MikiraSora/SimpleSvg2LineSegementInterpolater</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>0.5.0</Version>
+    <Version>0.5.5</Version>
   </PropertyGroup>
 
   <ItemGroup>
