@@ -250,7 +250,7 @@ namespace SimpleSvg2LineSegementInterpolater
             }
 
             //手动闭环
-            collection.Points.Add(collection.Points.LastOrDefault());
+            collection.Points.Add(collection.Points.FirstOrDefault());
 
             return collection;
         }
@@ -334,7 +334,7 @@ namespace SimpleSvg2LineSegementInterpolater
             collection.Points.AddRange(list3);
             collection.Points.AddRange(list4);
             //手动闭环
-            collection.Points.Add(collection.Points.LastOrDefault());
+            collection.Points.Add(collection.Points.FirstOrDefault());
 
             return collection;
         }
@@ -356,7 +356,7 @@ namespace SimpleSvg2LineSegementInterpolater
             collection.Points.Add(new(baseX, baseY + height));
 
             //手动闭环
-            collection.Points.Add(collection.Points.LastOrDefault());
+            collection.Points.Add(collection.Points.FirstOrDefault());
 
             collection.Color = stroke;
 
@@ -380,7 +380,7 @@ namespace SimpleSvg2LineSegementInterpolater
 
             //手动闭环
             if (isClose)
-                collection.Points.Add(collection.Points.LastOrDefault());
+                collection.Points.Add(collection.Points.FirstOrDefault());
 
             collection.Color = stroke;
             return collection;
