@@ -36,10 +36,20 @@ namespace SimpleSvg2LineSegementInterpolater
 
         private static void Draw(Graphics graphics, LineSegementCollection lineSegement)
         {
+            const float dotSize = 4f;
+
             if (lineSegement.Points.Count == 0)
                 return;
-            using var pen = new Pen(lineSegement.Color);
-            graphics.DrawLines(pen, lineSegement.Points.ToArray());
+            using var linePen = new Pen(lineSegement.Color);
+
+            graphics.DrawLines(linePen, lineSegement.Points.ToArray());
+            linePen.Color = Color.FromArgb(new Random().Next() | (255 << 24));
+            graphics.DrawRectangle(linePen, lineSegement.Points[0].X - 2 * dotSize / 2, lineSegement.Points[0].Y - 2 * dotSize / 2, 2 * dotSize, 2 * dotSize);
+            foreach ((var point, var i) in lineSegement.Points.Skip(1).Select((x, i) => (x, i)))
+            {
+                var actualDotSize = dotSize + dotSize * i * 2 / lineSegement.Points.Count;
+                graphics.DrawRectangle(linePen, point.X - actualDotSize / 2, point.Y - actualDotSize / 2, actualDotSize, actualDotSize);
+            }
         }
     }
 }
