@@ -4,6 +4,7 @@ using AngleSharp.Css;
 using AngleSharp.Css.Dom;
 using AngleSharp.Css.Parser;
 using AngleSharp.Dom;
+using AngleSharp.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,6 +36,17 @@ namespace SimpleSvg2LineSegementInterpolater
         {
             if (str == "none")
                 return defaultVal;
+            if (str.StartsWith("rgb("))
+            {
+                var color = str.ReplaceFirst("rgb(", string.Empty).ReplaceFirst(")", string.Empty).Split(",");
+                return Color.FromArgb(255, color[0].ToInteger(0), color[1].ToInteger(0), color[2].ToInteger(0));
+            }
+            if (str.StartsWith("rgba("))
+            {
+                var color = str.ReplaceFirst("rgba(", string.Empty).ReplaceFirst(")", string.Empty).Split(",");
+                return Color.FromArgb((int)(color[3].ToDouble(0d) * 255), color[0].ToInteger(0), color[1].ToInteger(0), color[2].ToInteger(0));
+            }
+
             return ColorTranslator.FromHtml(str);
         }
 
@@ -90,7 +102,7 @@ namespace SimpleSvg2LineSegementInterpolater
             if (stroke == default)
             {
                 var result = parser.ParseDeclaration(element.GetAttribute("style"));
-                var strokeStyleColor = result.FirstOrDefault(x => x.Name == "stroke")?.RawValue; 
+                var strokeStyleColor = result.FirstOrDefault(x => x.Name == "stroke")?.RawValue;
                 if (strokeStyleColor is not null)
                 {
                     var rgba = strokeStyleColor.AsRgba();

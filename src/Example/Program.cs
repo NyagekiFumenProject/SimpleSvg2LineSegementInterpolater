@@ -14,12 +14,12 @@ namespace Example
         static async Task Main(string[] args)
         {
             //var path = @"F:\Users\mikir\Downloads\photos-svgrepo-com.svg";
-            var path = @"I:\zz.svg";
+            var path = @"I:/mm.svg";
             //var path = @"C:\Users\mikir\Downloads\svg.svg";
             var lineSegments = await Interpolater.GenerateInterpolatedLineSegmentAsync(await File.ReadAllTextAsync(path), new InterpolaterOption()
             {
                 DefaultStrokeColor = System.Drawing.Color.Pink,
-                EnableFillAsStroke = true,
+                EnableFillAsStroke = false,
                 Scale = 4f,
                 CircleSimplyAsLessPolygon = true
             });
@@ -27,8 +27,8 @@ namespace Example
             
             foreach (var lineSegment in lineSegments)
             {
-                LineSegmentSimplifier.SimplifySameGradientPoints(lineSegment,10);
-                LineSegmentSimplifier.SimplifyTooClosePoints(lineSegment);
+                //LineSegmentSimplifier.SimplifySameGradientPoints(lineSegment,10);
+                //LineSegmentSimplifier.SimplifyTooClosePoints(lineSegment);
             }
             
             Debug.WriteLine($"after optimze points count: {lineSegments.Sum(x => x.Points.Count)}");

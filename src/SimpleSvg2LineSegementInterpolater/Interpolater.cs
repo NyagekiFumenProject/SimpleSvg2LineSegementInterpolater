@@ -365,11 +365,25 @@ namespace SimpleSvg2LineSegementInterpolater
 
         private static LineSegementCollection GenerateInterpolatedLineSegmentByPolygon(IElement element, InterpolaterOption option, bool isClose = true)
         {
-            var points = element.Attributes.TryGetAttrValue("points", string.Empty).Split(" ").Select(x =>
+            var pointsStr = element.Attributes.TryGetAttrValue("points", string.Empty);
+            PointF[] points = default;
+
+            if (pointsStr.Contains(","))
             {
-                var arr = x.Split(",");
-                return new PointF(arr[0].TryToFloat(), arr[1].TryToFloat());
-            }).ToArray();
+                points = pointsStr.Split(" ").Select(x =>
+                {
+                    var arr = x.Split(",");
+                    return new PointF(arr[0].TryToFloat(), arr[1].TryToFloat());
+                }).ToArray();
+            }
+            else
+            {
+                var f = pointsStr.Split(" ");
+                points = new PointF[f.Length / 2];
+                for (int i = 0; i < f.Length / 2; i++)
+                    points[i] = new PointF(f[2 * i + 0].TryToFloat(), f[2 * i + 1].TryToFloat());
+            }
+
             var stroke = element.TryGetStoke(option);
 
             var collection = new LineSegementCollection();
