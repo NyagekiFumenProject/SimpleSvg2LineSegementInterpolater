@@ -1,17 +1,13 @@
 ﻿using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Io;
-using AngleSharp.Svg.Dom;
 using SimpleSvg2LineSegementInterpolater.Base;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Color = System.Drawing.Color;
 
 namespace SimpleSvg2LineSegementInterpolater
 {
@@ -57,13 +53,16 @@ namespace SimpleSvg2LineSegementInterpolater
         {
             var stroke = element.TryGetStoke(option, false);
 
-            LineSegementCollection PostProcess(LineSegementCollection collection)
+            LineSegementCollection PostProcess2(LineSegementCollection collection, IElement e)
             {
                 //todo overwrite props
                 if (stroke != default)
                     collection.Color = stroke;
+                collection.Name = e.Id;
                 return collection;
             }
+            LineSegementCollection PostProcess(LineSegementCollection collection)
+                => PostProcess2(collection, element);
 
             switch (element.NodeName)
             {
@@ -97,7 +96,7 @@ namespace SimpleSvg2LineSegementInterpolater
                 default:
                     foreach (var child in element.Children)
                         foreach (var childSegment in GenerateInterpolatedLineSegmentInternal(child, option))
-                            yield return PostProcess(childSegment);
+                            yield return PostProcess2(childSegment, child);
                     break;
             }
         }
@@ -200,8 +199,12 @@ namespace SimpleSvg2LineSegementInterpolater
             var d = element.Attributes.TryGetAttrValue("d", "");
             var stroke = element.TryGetStoke(option);
 
-            foreach (var item in d.Split(new char[] { 'z', 'Z' }))
+            var parts = d.Split(new char[] { 'z', 'Z' });
+
+            for (int i = 0; i < parts.Length; i++)
             {
+                var item = parts[i];
+
                 var z = item.Trim().Replace("\r", string.Empty).Replace("\n", string.Empty);
                 if (!item.EndsWith("z", StringComparison.InvariantCultureIgnoreCase))
                     z = z + "z";
@@ -219,6 +222,13 @@ namespace SimpleSvg2LineSegementInterpolater
 
                 foreach (var vec2 in reserializer.WorkVertices)
                     collection.Points.Add(new(vec2.X, vec2.Y));
+
+                if (collection.Points.Count == 0)
+                    continue;
+
+                //手动闭环
+                if (collection.Points.Count > 0)
+                    collection.Points.Add(collection.Points.FirstOrDefault());
 
                 yield return collection;
             }

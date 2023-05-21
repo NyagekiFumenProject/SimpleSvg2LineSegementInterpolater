@@ -12,6 +12,7 @@ namespace SimpleSvg2LineSegementInterpolater.Base
     {
         public List<PointF> Points { get; set; }
         public Color Color { get; set; }
+        public string Name { get;set; }
 
         public Rect CalculateBound()
         {
@@ -20,5 +21,7 @@ namespace SimpleSvg2LineSegementInterpolater.Base
 
             return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
+
+        public override string ToString() => $"Name: {Name}, Point count: {Points?.Count}";
     }
 }
